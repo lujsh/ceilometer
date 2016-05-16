@@ -9,7 +9,7 @@ from oslo_log import log
 # This code is based upon the Kafka producer/client classes
 LOG = log.getLogger(__name__)
 
-DEFAULT_SOCKET_TIMEOUT_SECONDS = 600
+DEFAULT_SOCKET_TIMEOUT_SECONDS = 120
 class MTGraphiteClient(object):
 
     def __init__(self, host, port, is_super, tenant_id, tenant_password, batch_send_every_t = 5,
@@ -137,6 +137,9 @@ class MTGraphiteClient(object):
                      % bytearray(chunk).strip())
         if code == '1A':
             LOG.info('Confirmed write to mtgraphite socket.')
+        else:
+            LOG.info('Failed to get ACK.')
+            raise Exception('Failed to get ACK.')
         return True
 
     def _write_messages(self, msgset, max_emit_retries=10):
